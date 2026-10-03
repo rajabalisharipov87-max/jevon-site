@@ -4,7 +4,6 @@ import { createHmac } from 'node:crypto';
 import ts from 'typescript';
 import { seedReportsAdmin } from './seed-reports-admin.mjs';
 
-if (existsSync('.env.local')) process.loadEnvFile('.env.local');
 const { initializeDatabase, pool, transaction } = await import('../scripts/postgres-storage.mjs');
 export async function setup() {
   await initializeDatabase();

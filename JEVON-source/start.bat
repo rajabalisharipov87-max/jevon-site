@@ -21,12 +21,7 @@ echo Orders:     http://127.0.0.1:8080
 echo Attendance: http://127.0.0.1:8080/attendance
 echo Employees:  http://127.0.0.1:8080/employees
 echo Keep this window open. Press Ctrl+C to stop.
-node -e "const net=require('node:net');const s=net.connect({host:'127.0.0.1',port:8080});s.setTimeout(1500);s.on('connect',()=>{s.destroy();process.exit(0)});s.on('error',()=>process.exit(1));s.on('timeout',()=>{s.destroy();process.exit(1)})"
-if not errorlevel 1 (
-  echo Port 8080 is already in use. Open http://127.0.0.1:8080 .
-  popd
-  exit /b 0
-)
+echo Checking PostgreSQL, database and migrations using .env...
 node scripts/run-local.mjs dev
 set "EXIT_CODE=%ERRORLEVEL%"
 popd

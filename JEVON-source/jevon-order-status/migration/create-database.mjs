@@ -5,6 +5,17 @@ export async function createDatabase() {
   const url = new URL(databaseUrl());
   const name = decodeURIComponent(url.pathname.slice(1));
   if (!name || Buffer.byteLength(name)>63) throw new Error('DATABASE_URL must contain a database name of up to 63 bytes');
+  const probe = new pg.Client({ connectionString: databaseUrl(), connectionTimeoutMillis: 5000 });
+  try {
+    await probe.connect();
+    await probe.query('SELECT 1');
+    console.log(`PostgreSQL: database ${name} is accessible.`);
+    return;
+  } catch(error) {
+    // Authentication/network errors must not be mistaken for a missing database.
+    if(error.code!=='3D000') throw error;
+    console.log(`Database ${name} is missing; creating it...`);
+  } finally { await probe.end(); }
   url.pathname = '/postgres';
   const client = new pg.Client({ connectionString: process.env.ADMIN_DATABASE_URL || url.toString(), connectionTimeoutMillis: 5000 });
   try {

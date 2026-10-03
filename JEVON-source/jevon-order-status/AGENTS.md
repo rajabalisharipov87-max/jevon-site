@@ -10,6 +10,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Database changes
 
+Connection configuration must be kept in the project `.env` (ignored by Git); `.env.example` contains placeholders only. Migration and startup scripts load `.env`. Existing server environment variables take precedence.
+
 User requirement: keep all database deployment and migration scripts in `migration/`.
 Every future PostgreSQL schema or stored-data transformation must be supplied as a new numbered SQL file in `migration/sql/` in the same change as the application code.
 Never modify or delete an applied migration. Use the next migration number for corrections.

@@ -2,7 +2,7 @@ import pg from 'pg';
 import { applyMigrations } from '../migration/runner.mjs';
 import { randomBytes } from 'node:crypto';
 
-if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required in .env.local');
+if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required in .env');
 const key = Symbol.for('jevon.postgres.pool');
 export const pool = globalThis[key] ??= new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 10, connectionTimeoutMillis: 5000 });
 pool.on('error', error => console.error('PostgreSQL pool:', error.message));

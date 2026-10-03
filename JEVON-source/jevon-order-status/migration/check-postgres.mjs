@@ -1,5 +1,3 @@
-import { existsSync } from 'node:fs';
-if (existsSync('.env.local')) process.loadEnvFile('.env.local');
 const {pool} = await import('../scripts/postgres-storage.mjs');
 try {
   const result = await pool.query('SELECT current_database() AS database, current_user AS user, 1 AS connected');

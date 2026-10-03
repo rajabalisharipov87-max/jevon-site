@@ -17,6 +17,7 @@
     "start:cloudflare": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --inspector-port 0",
     "db:setup": "node migration/setup-postgres.mjs",
     "db:check": "node migration/check-postgres.mjs",
+    "db:prepare": "node migration/prepare.mjs",
     "db:create": "node migration/create-database.mjs",
     "db:migrate": "node migration/migrate.mjs",
     "db:deploy": "node migration/deploy.mjs"
