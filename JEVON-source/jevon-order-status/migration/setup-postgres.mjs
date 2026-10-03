@@ -2,11 +2,13 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createHmac } from 'node:crypto';
 import ts from 'typescript';
+import { seedReportsAdmin } from './seed-reports-admin.mjs';
 
 if (existsSync('.env.local')) process.loadEnvFile('.env.local');
 const { initializeDatabase, pool, transaction } = await import('../scripts/postgres-storage.mjs');
 export async function setup() {
   await initializeDatabase();
+  await seedReportsAdmin();
   await transaction(async client => {
     await client.query('SELECT pg_advisory_xact_lock(80800801)');
     const done = await client.query("SELECT 1 FROM app_settings WHERE key='sqlite_import_v1'");
