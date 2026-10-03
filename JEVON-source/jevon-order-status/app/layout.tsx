@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from 'next/link';
+import SiteNavigation from '../components/site-navigation';
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body><nav style={{height:40,display:'flex',gap:24,alignItems:'center',padding:'0 16px',background:'#0e3a5a',color:'white',position:'relative',zIndex:100,overflowX:'auto',whiteSpace:'nowrap'}}><Link href="/">Заказы</Link><Link href="/attendance">Приход / уход</Link><Link href="/employees">Сотрудники и журнал</Link><Link href="/reports">Отчёты</Link></nav>{children}</body>
+      <body><SiteNavigation />{children}</body>
     </html>
   );
 }

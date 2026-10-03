@@ -12,6 +12,6 @@ export async function reportsUser(token?:string):Promise<ReportsUser|null>{
 export function requestToken(request:Request){return request.headers.get('cookie')?.match(/(?:^|;\s*)jevon_reports=([^;]+)/)?.[1];}
 export async function requestUser(request:Request){return reportsUser(requestToken(request));}
 export async function requireReportsUser(){const user=await reportsUser((await cookies()).get('jevon_reports')?.value);if(!user)redirect('/reports/login');return user;}
-export function sameOrigin(request:Request){const origin=request.headers.get('origin');return !origin||new URL(origin).host===new URL(request.url).host;}
+export function sameOrigin(request:Request){const origin=request.headers.get('origin');if(!origin)return true;try{return new URL(origin).host===new URL(request.url).host;}catch{return false;}}
 export function cookieValue(token:string,request:Request,maxAge=28800){const secure=process.env.NODE_ENV==='production'||new URL(request.url).protocol==='https:';return `jevon_reports=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${maxAge}${secure?'; Secure':''}`;}
 export async function newSession(userId:number){const token=randomBytes(32).toString('base64url');await pool.query("DELETE FROM reports_sessions WHERE expires_at<=now()");await pool.query("INSERT INTO reports_sessions(token_hash,user_id,expires_at) VALUES ($1,$2,now()+interval '8 hours')",[sessionHash(token),userId]);return token;}
