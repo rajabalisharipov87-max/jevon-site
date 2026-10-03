@@ -1,0 +1,1 @@
+ALTER TABLE `order_materials` ADD `supply_source` text DEFAULT 'client' NOT NULL;

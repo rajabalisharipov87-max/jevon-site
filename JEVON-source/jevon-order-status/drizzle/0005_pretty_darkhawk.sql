@@ -1,0 +1,1 @@
+ALTER TABLE `order_materials` ADD `photo_key` text;

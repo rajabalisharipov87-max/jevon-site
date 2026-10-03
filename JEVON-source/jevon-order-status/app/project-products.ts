@@ -1,0 +1,3 @@
+export const projectProductTypes=['Кухня','Шкаф','Шкаф-купе','Гардеробная','Прихожая','Комод','Тумба','Тумба под ТВ','Тумба под раковину','Пенал','Стеллаж','Полка','Стол','Кровать','Мебель для ванной','Офисная мебель'] as const;
+export type ProjectItem={id:number;projectId:number;name:string;quantity:number;unitPriceCents:number;createdAt:string};
+export function parsePrice(value:unknown){if(typeof value!=='string'||!/^\d{1,8}(?:[.,]\d{1,2})?$/.test(value.trim()))return null;const [whole,fraction='']=value.trim().replace(',','.').split('.');return Number(whole)*100+Number(fraction.padEnd(2,'0'))}

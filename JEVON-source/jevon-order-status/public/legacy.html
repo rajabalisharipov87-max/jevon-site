@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem("jevon_theme")||"light"}catch{}</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a3554" />
+  <title>JEVON | Статус заказов</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230a3554'/%3E%3Cpath d='M18 17h9v23c0 7-4 11-11 11h-3v-8h3c2 0 2-1 2-3V17zm14 0h19v8H41v5h9v8h-9v5h10v8H32V17z' fill='white'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <main id="app">
+    <section id="sessionLoading" class="session-loading" role="status" aria-live="polite"><strong>JEVON</strong><span>Загружаем ваш кабинет…</span></section>
+    <section id="loginView" class="login-shell hidden">
+      <div class="brand-card">
+        <div class="brand-mark">J</div>
+        <div><strong>JEVON</strong><span>Статус заказов</span></div>
+      </div>
+      <div class="login-card">
+        <div class="eyebrow">Вход для отделов</div>
+        <h1>Введите код отдела</h1>
+        <p>После входа вы увидите заказы и задачи своего отдела.</p>
+        <div id="pinDots" class="pin-dots" aria-label="Четырёхзначный код"><i></i><i></i><i></i><i></i></div>
+        <div class="keypad" aria-label="Цифры">
+          <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
+          <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
+          <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
+          <button class="ghost" data-key="clear">Очистить</button><button data-key="0">0</button><button class="ghost" data-key="back">⌫</button>
+        </div>
+        <p id="loginError" class="error" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section id="dashboardView" class="dashboard hidden">
+      <header class="topbar">
+        <div class="top-brand"><span>JEVON</span><small>Статус заказов</small></div>
+        <div class="header-actions"><button id="notificationBtn" class="icon-btn notification-toggle" type="button" aria-label="Включить уведомления" title="Уведомления"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></svg><span class="notification-indicator" aria-hidden="true"></span></button><button id="logoutBtn" class="icon-btn" aria-label="Выйти">↪</button></div>
+      </header>
+      <div class="dept-strip">
+        <div><span>Отдел</span><strong id="deptName"></strong></div>
+        <div class="live"><i></i> Работает</div>
+      </div>
+      <div id="orderWorkspace" class="content">
+        <div id="orderSummary" class="summary-grid" aria-label="Фильтр заказов">
+          <button type="button" data-filter="active" class="active" aria-pressed="true"><span>Активные заказы</span><strong id="activeCount">0</strong></button>
+          <button type="button" data-filter="ready" aria-pressed="false"><span>Готовые заказы</span><strong id="readyCount">0</strong></button>
+          <button type="button" data-filter="shipped" aria-pressed="false"><span>Забрали заказ</span><strong id="shippedCount">0</strong></button>
+        </div>
+        <label class="search-box">
+          <span>⌕</span>
+          <input id="searchInput" type="search" placeholder="№ заказа или имя клиента" autocomplete="off" />
+        </label>
+        <button id="addOrderButton" type="button" class="primary add-order-button hidden">＋ Добавить карточку заказа</button>
+        <div id="draftOrder"></div>
+        <div id="ordersList" class="orders-list"></div>
+      </div>
+      <div id="procurementView" class="content hidden">
+        <div class="procurement-heading"><div><small>СНАБЖЕНИЕ</small><h1>Накладные и расходы</h1></div><span id="procurementCount">0 заказов</span></div>
+        <label class="search-box"><span>⌕</span><input id="procurementSearch" type="search" placeholder="№ заказа или материал" autocomplete="off"></label>
+        <div id="procurementList" class="procurement-list" aria-live="polite"></div>
+      </div>
+      <section id="mobileStats" class="content mobile-page hidden" aria-labelledby="statsTitle">
+        <h1 id="statsTitle">Статистика</h1>
+        <p id="statsScope" class="mobile-page-note"></p>
+        <div id="mobileStatsGrid" class="mobile-stat-grid"></div>
+      </section>
+      <section id="mobileSettings" class="content mobile-page hidden" aria-labelledby="settingsTitle">
+        <h1 id="settingsTitle">Настройки</h1>
+        <div class="settings-card preference-card"><div><span>Тема сайта</span><small>Оформление интерфейса</small></div><div class="preference-switch" role="group" aria-label="Тема сайта"><button type="button" data-theme-choice="light">Светлая</button><button type="button" data-theme-choice="dark">Тёмная</button></div></div>
+        <div class="settings-card preference-card"><div><span>Язык сайта</span><small>Забони интерфейс</small></div><div class="preference-switch" role="group" aria-label="Язык сайта"><button type="button" data-language-choice="ru">Русский</button><button type="button" data-language-choice="tg">Тоҷикӣ</button></div></div>
+        <div class="settings-card"><span>Уведомления о заказах</span><button id="settingsNotifications" type="button" class="secondary">Включить</button></div>
+        <div class="settings-card"><span>Текущий кабинет</span><strong id="settingsDepartment"></strong></div>
+        <details id="clientAccessPanel" class="client-access-panel hidden"><summary>Доступы клиентов <span>Восстановление кода для входа</span></summary><div class="client-access-body"><input id="clientAccessSearch" type="search" placeholder="Имя клиента или телефон" aria-label="Поиск клиента"><p class="client-access-note">Проверьте, что обращается владелец номера. Новый код заменяет старый и завершает прежние сеансы клиента.</p><div id="clientAccessList"></div></div></details>
+        <button id="settingsLogout" type="button" class="secondary settings-logout">Выйти из кабинета</button>
+      </section>
+      <nav id="mobileNav" class="mobile-nav" aria-label="Основная навигация">
+        <button type="button" data-page="orders" class="active" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg><span>Заказы</span></button>
+        <button type="button" data-page="stats"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11m5 9V5m5 15v-7m5 7V8"/></svg><span>Статистика</span></button>
+        <button type="button" data-page="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Настройки</span></button>
+      </nav>
+    </section>
+  </main>
+
+  <div id="sheetBackdrop" class="backdrop hidden"></div>
+  <dialog id="shareDialog" class="share-dialog">
+    <h2>Поделиться заказом</h2>
+    <p>Отправьте личную ссылку клиенту или мастеру. По ней виден только ход этого заказа.</p>
+    <input id="shareUrl" readonly aria-label="Ссылка на заказ">
+    <div class="share-actions"><a id="shareWhatsApp" class="primary" target="_blank" rel="noopener noreferrer">Отправить в WhatsApp</a><button id="copyShareUrl" class="secondary" type="button">Копировать ссылку</button></div>
+    <button id="closeShareDialog" type="button" class="secondary">Закрыть</button>
+  </dialog>
+  <aside id="orderSheet" class="order-sheet" aria-hidden="true">
+    <div class="sheet-handle"></div>
+    <button id="closeSheet" class="sheet-close" aria-label="Закрыть">×</button>
+    <div id="sheetContent"></div>
+  </aside>
+  <div id="cameraOverlay" class="camera-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="cameraTitle">
+    <div class="camera-panel">
+      <button type="button" id="cancelCamera" class="camera-close" aria-label="Закрыть">×</button>
+      <h2 id="cameraTitle">Фото готового заказа</h2>
+      <p id="cameraHint">Сфотографируйте заказ перед изменением статуса упаковки.</p>
+      <video id="cameraVideo" autoplay playsinline muted></video>
+      <img id="cameraPreview" class="hidden" alt="Снимок заказа">
+      <p id="cameraError" class="camera-error" role="alert"></p>
+      <div class="camera-actions">
+        <button type="button" id="takePhoto" class="primary">Сделать фото</button>
+        <button type="button" id="retakePhoto" class="secondary hidden">Переснять</button>
+        <button type="button" id="confirmPhoto" class="primary hidden">Сохранить фото и статус</button>
+      </div>
+      <div class="camera-file-options"><label>📷 Снять камерой телефона<input id="packagingPhotoFile" type="file" accept="image/*" capture="environment"></label><label>🖼 Выбрать из галереи<input id="packagingGalleryFile" type="file" accept="image/*"></label></div>
+    </div>
+  </div>
+  <div id="defectCameraOverlay" class="camera-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="defectCameraTitle">
+    <div class="camera-panel">
+      <button type="button" id="closeDefectCamera" class="camera-close" aria-label="Закрыть">×</button>
+      <h2 id="defectCameraTitle">Фото повреждения</h2>
+      <p>Сфотографируйте повреждённый лист, чтобы подтвердить дефект.</p>
+      <video id="defectVideo" autoplay playsinline muted></video>
+      <img id="defectPreview" class="hidden" alt="Снимок повреждённого листа">
+      <p id="defectCameraError" class="camera-error" role="alert"></p>
+      <div class="camera-actions"><button type="button" id="takeDefectPhoto" class="primary">Сделать фото</button><button type="button" id="retakeDefectPhoto" class="secondary hidden">Переснять</button><button type="button" id="useDefectPhoto" class="primary hidden">Прикрепить фото</button></div>
+      <div class="camera-file-options"><label>📷 Снять камерой телефона<input id="defectPhotoFile" type="file" accept="image/*" capture="environment"></label><label>🖼 Выбрать из галереи<input id="defectGalleryFile" type="file" accept="image/*"></label></div>
+    </div>
+  </div>
+  <dialog id="pickupDialog" class="pickup-dialog" aria-labelledby="pickupTitle" aria-describedby="pickupDescription">
+    <div class="pickup-symbol" aria-hidden="true">✓</div>
+    <h2 id="pickupTitle">Подтвердить выдачу?</h2>
+    <p id="pickupDescription">Заказ <strong id="pickupOrderNumber"></strong> готов. Отметьте выдачу, когда его действительно забрали.</p>
+    <p id="pickupDialogError" class="error" role="alert"></p>
+    <div class="pickup-dialog-actions">
+      <button type="button" id="cancelPickup" class="secondary">Отмена</button>
+      <button type="button" id="confirmPickup" class="primary">Да, заказ забрали</button>
+    </div>
+  </dialog>
+  <dialog id="unsavedDialog" class="pickup-dialog" aria-labelledby="unsavedTitle" aria-describedby="unsavedDescription">
+    <h2 id="unsavedTitle">Позиция не сохранена</h2>
+    <p id="unsavedDescription">Вы изменили данные услуги или материала. Если закрыть карточку сейчас, введённые изменения потеряются.</p>
+    <div class="pickup-dialog-actions"><button type="button" id="continueMaterial" class="primary">Продолжить заполнение</button><button type="button" id="discardMaterial" class="secondary">Закрыть без сохранения</button></div>
+  </dialog>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="preferences.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

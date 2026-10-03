@@ -1,0 +1,23 @@
+{
+  "folders": [
+    {
+      "name": "jevon-order-status",
+      "path": "jevon-order-status"
+    },
+    {
+      "name": "jevon-order-tracking",
+      "path": "jevon-order-tracking"
+    },
+    {
+      "name": "jevon-hastu-nest",
+      "path": "jevon-hastu-nest"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true
+    },
+    "editor.tabSize": 2
+  }
+}
