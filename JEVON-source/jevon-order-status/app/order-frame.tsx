@@ -8,8 +8,8 @@ export default function OrderFrame() {
     const viewport = window.visualViewport;
     const fit = () => {
       if (!frame.current) return;
-      frame.current.style.height = `${viewport?.height ?? window.innerHeight}px`;
-      frame.current.style.top = `${viewport?.offsetTop ?? 0}px`;
+      frame.current.style.height = `${(viewport?.height ?? window.innerHeight) - 40}px`;
+      frame.current.style.top = `${(viewport?.offsetTop ?? 0) + 40}px`;
     };
     fit();
     window.addEventListener("resize", fit);
@@ -23,5 +23,5 @@ export default function OrderFrame() {
       viewport?.removeEventListener("scroll", fit);
     };
   }, []);
-  return <iframe ref={frame} title="JEVON | Статус заказов" src="/legacy.html" allow="camera" style={{ display: "block", position: "fixed", top: 0, left: 0, border: 0, width: "100%", height: "100dvh" }} />;
+  return <iframe ref={frame} title="JEVON | Статус заказов" src="/legacy.html" allow="camera" style={{ display: "block", position: "fixed", top: 40, left: 0, border: 0, width: "100%", height: "calc(100dvh - 40px)" }} />;
 }

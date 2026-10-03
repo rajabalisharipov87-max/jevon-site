@@ -6,8 +6,8 @@ export type Order = (typeof catalog)[number] & { phone?: string; kind?: "Наш 
 export async function allOrders(): Promise<Order[]> {
   const rows = await env.DB!.prepare("SELECT data FROM synced_orders").all<{ data: string }>();
   // Keep the complete imported snapshot visible while the central register syncs.
-  const initialStatuses = new Map(catalog.map(item => [item.id, item.statuses]));
-  const byId = new Map<string, Order>([...catalog, ...supplement].map(item => [item.id, item as Order]));
+  const initialStatuses = new Map((process.env.JEVON_LOCAL === '1' ? [] : catalog).map(item => [item.id, item.statuses]));
+  const byId = new Map<string, Order>((process.env.JEVON_LOCAL === '1' ? [] : [...catalog, ...supplement]).map(item => [item.id, item as Order]));
   for (const row of rows.results) {
     try {
       const item = JSON.parse(row.data) as Order;

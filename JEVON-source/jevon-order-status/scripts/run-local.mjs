@@ -1,0 +1,12 @@
+import { spawn } from 'node:child_process';
+import { setup } from '../migration/setup-postgres.mjs';
+await setup();
+const { pool } = await import('./postgres-storage.mjs');
+await pool.end();
+const command = process.argv[2] ?? 'dev';
+const args = ['dev','start'].includes(command) ? ['--hostname','127.0.0.1','--port','8080'] : [];
+const child = spawn(process.execPath,['node_modules/next/dist/bin/next',command,...args],{stdio:'inherit',env:{...process.env,JEVON_LOCAL:'1'}});
+child.on('exit', code => process.exit(code ?? 1));
+child.on('error', error => { console.error(error); process.exit(1); });
+process.on('SIGINT',()=>child.kill('SIGINT'));
+process.on('SIGTERM',()=>child.kill('SIGTERM'));
