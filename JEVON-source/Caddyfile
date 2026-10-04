@@ -1,28 +1,34 @@
-# HTTPS in front of JEVON (the app itself listens only on 127.0.0.1:8080).
+# HTTPS for JEVON on port 8080 (ports 80/443 are not used).
+# The app itself runs on 127.0.0.1:3000 — set APP_PORT=3000 in jevon-order-status/.env.
 # Run from this folder:  caddy run
-# Ports 80 and 443 must be open in Windows Firewall and forwarded on the router.
+# Port 8080 must be open in Windows Firewall and forwarded on the router.
+
+{
+	# Clients accept the certificate themselves; no need to touch the server's trust store.
+	skip_install_trust
+	# Do not open port 80 for redirects; the redirect is done on 8080 below.
+	auto_https disable_redirects
+	servers :8080 {
+		# Plain http://...:8080 is redirected to https://...:8080 instead of failing.
+		listener_wrappers {
+			http_redirect
+			tls
+		}
+	}
+}
 
 (jevon_app) {
 	encode gzip
-	reverse_proxy 127.0.0.1:8080 {
+	reverse_proxy 127.0.0.1:3000 {
 		# Real client address for PIN attempt limits; client-sent values are replaced.
 		header_up X-Forwarded-For {remote_host}
 		header_up CF-Connecting-IP {remote_host}
 	}
 }
 
-# Variant A — domain name pointing to the server (recommended).
-# Caddy obtains and renews a trusted Let's Encrypt certificate automatically.
-# Replace jevon.example.com with your domain and remove the leading "#".
-#
-# jevon.example.com {
-# 	import jevon_app
-# }
-
-# Variant B — no domain yet, access by IP address.
-# Caddy issues its own certificate: browsers show a warning once,
+# Caddy issues its own certificate: browsers show a warning once per device,
 # after accepting it the camera and manager login work.
-https://94.199.16.44, https://localhost {
+https://94.199.16.44:8080, https://localhost:8080 {
 	tls internal
 	import jevon_app
 }
