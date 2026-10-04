@@ -22,8 +22,21 @@ echo Attendance: http://127.0.0.1:8080/attendance
 echo Employees:  http://127.0.0.1:8080/employees
 echo Keep this window open. Press Ctrl+C to stop.
 echo Checking PostgreSQL, database and migrations using .env...
-node scripts/run-local.mjs dev
+rem "start.bat dev" runs the development server; the default is a production build.
+if /i "%~1"=="dev" (
+  node scripts/run-local.mjs dev
+) else (
+  echo Building the application...
+  node scripts/run-local.mjs build
+  if errorlevel 1 (
+    echo Error: build failed.
+    set "EXIT_CODE=1"
+    goto done
+  )
+  node scripts/run-local.mjs start
+)
 set "EXIT_CODE=%ERRORLEVEL%"
+:done
 popd
 if not "%EXIT_CODE%"=="0" pause
 exit /b %EXIT_CODE%

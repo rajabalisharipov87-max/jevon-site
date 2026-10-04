@@ -1,0 +1,28 @@
+# HTTPS in front of JEVON (the app itself listens only on 127.0.0.1:8080).
+# Run from this folder:  caddy run
+# Ports 80 and 443 must be open in Windows Firewall and forwarded on the router.
+
+(jevon_app) {
+	encode gzip
+	reverse_proxy 127.0.0.1:8080 {
+		# Real client address for PIN attempt limits; client-sent values are replaced.
+		header_up X-Forwarded-For {remote_host}
+		header_up CF-Connecting-IP {remote_host}
+	}
+}
+
+# Variant A — domain name pointing to the server (recommended).
+# Caddy obtains and renews a trusted Let's Encrypt certificate automatically.
+# Replace jevon.example.com with your domain and remove the leading "#".
+#
+# jevon.example.com {
+# 	import jevon_app
+# }
+
+# Variant B — no domain yet, access by IP address.
+# Caddy issues its own certificate: browsers show a warning once,
+# after accepting it the camera and manager login work.
+https://94.199.16.44, https://localhost {
+	tls internal
+	import jevon_app
+}
